@@ -1,2 +1,91 @@
-thus - chocolate
-jii - css
+import sqlite3
+
+# Connect to SQLite database (or create it if it doesn't exist)
+conn = sqlite3.connect('contacts.db')
+
+# Create a cursor object to execute SQL commands
+cursor = conn.cursor()
+
+# Create a table for storing contacts
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS contacts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    phone TEXT NOT NULL
+)
+''')
+
+# Commit the changes and close the connection
+conn.commit()
+conn.close()
+def add_contact(name, phone):
+    conn = sqlite3.connect('contacts.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO contacts (name, phone) VALUES (?, ?)", (name, phone))
+    conn.commit()
+    conn.close()
+
+def view_contacts():
+    conn = sqlite3.connect('contacts.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM contacts")
+    contacts = cursor.fetchall()
+    conn.close()
+    return contacts
+
+def update_contact(contact_id, new_name, new_phone):
+    conn = sqlite3.connect('contacts.db')
+    cursor = conn.cursor()
+    cursor.execute("UPDATE contacts SET name = ?, phone = ? WHERE id = ?", (new_name, new_phone, contact_id))
+    conn.commit()
+    conn.close()
+
+def delete_contact(contact_id):
+    conn = sqlite3.connect('contacts.db')
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM contacts WHERE id = ?", (contact_id,))
+    conn.commit()
+    conn.close()
+def main():
+    while True:
+        print("\nSimple Contact Manager")
+        print("1. Add Contact")
+        print("2. View Contacts")
+        print("3. Update Contact")
+        print("4. Delete Contact")
+        print("5. Exit")
+
+        choice = input("Choose an option: ")
+
+        if choice == '1':
+            name = input("Enter contact name: ")
+            phone = input("Enter contact phone: ")
+            add_contact(name, phone)
+            print("Contact added successfully!")
+
+        elif choice == '2':
+            contacts = view_contacts()
+            for contact in contacts:
+                print(f"ID: {contact[0]} | Name: {contact[1]} | Phone: {contact[2]}")
+
+        elif choice == '3':
+            contact_id = int(input("Enter the ID of the contact to update: "))
+            new_name = input("Enter new name: ")
+            new_phone = input("Enter new phone: ")
+            update_contact(contact_id, new_name, new_phone)
+            print("Contact updated successfully!")
+
+        elif choice == '4':
+            contact_id = int(input("Enter the ID of the contact to delete: "))
+            delete_contact(contact_id)
+            print("Contact deleted successfully!")
+
+        elif choice == '5':
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice! Please choose again.")
+
+if _name_ == "_main_":
+    main()
